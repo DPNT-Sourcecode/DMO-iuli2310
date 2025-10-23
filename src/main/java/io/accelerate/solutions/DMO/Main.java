@@ -16,6 +16,12 @@ class Main {
         df.setRoundingMode(RoundingMode.CEILING);
     }
 
+    private static final String TITLE = "WAVES";
+    private static final String PROMPT = "TYPE IN HOW MANY WAVES TO DRAW AS A NUMBER BETWEEN 1 AND 4?";
+    private static final String WAVE_PATTERN = "____....~~~~''''~~~~....____";
+    private static final float WAVE_SEGMENT_COUNT = 7f;
+    private static final float WAVE_STEP = 4f;
+
     public static void main(String[] args) {
         try (Scanner scanner = new Scanner(System.in)) {
             InputProviderScalar inputForScalarF = () -> Float.parseFloat(scanner.nextLine());
@@ -113,120 +119,65 @@ class Main {
     }
 
     public static void run(OutputSink outputSink, InputProviderScalar inputForScalarF) {
-        int label = 1;
-
-        float scalarE = 0;
-        float scalarF = 0;
-        float scalarI = 0;
-        float scalarJ = 0;
-        float scalarL = 0;
-        float scalarMS = 0;
-        float scalarN = 0;
-        float scalarS = 0;
-        String stringW = "";
-        boolean loopActive11 = false;
-        boolean loopActive10 = false;
-
         Output output = new Output(outputSink);
+        float waveCount = showIntroAndReadWaveCount(output, inputForScalarF);
+        WaveParameters parameters = new WaveParameters(waveCount);
 
-        int iterations = 0;
+        renderWaves(output, parameters);
+        output.println();
+    }
 
-        mainLoop: while (true) {
-            iterations += 1;
-            if (iterations > 99999) {
-                output.print("INFINITE LOOP DETECTED. STOPPING EXECUTION.");output.println();
-                break mainLoop;
-            }
+    private static float showIntroAndReadWaveCount(Output output, InputProviderScalar inputProvider) {
+        output.print(TITLE);
+        output.println();
 
-            if (loopActive11 && label > 13) loopActive11 = false;
-            if (loopActive10 && label > 14) loopActive10 = false;
+        output.print(PROMPT);
+        output.println();
 
-            switch (label) {
-                //1PRINT"WAVES"
-                case 1:
-                    label = 2;
-                    output.print("WAVES");output.println();
-                    break;
-                //2INPUT"TYPEINHOWMANYWAVESTODRAWASANUMBERBETWEEN1AND4";F:PRINT
-                case 2:
-                    label = 3;
-                    output.print("TYPE IN HOW MANY WAVES TO DRAW AS A NUMBER BETWEEN 1 AND 4?");
-                    output.println();
-                    scalarF = inputForScalarF.fetch();
-                    output.println();
-                    break;
-                //3W$="____....~~~~''''~~~~....____":E=7:MS=4
-                case 3:
-                    label = 4;
-                    stringW = "____....~~~~''''~~~~....____";
-                    scalarE = 7;
-                    scalarMS = 4;
-                    break;
-                //4L=LEN(W$)
-                case 4:
-                    label = 5;
-                    scalarL = len(stringW);
-                    break;
-                //5N=L/F:S=N/E
-                case 5:
-                    label = 10;
-                    scalarN = scalarL/scalarF;
-                    scalarS = scalarN/scalarE;
-                    break;
-                //10FORI=1TOFSTEP1
-                case 10:
-                    label = 11;
-                    if (loopActive10 == false) {
-                        scalarI = 1;
-                        loopActive10 = true;
-                    }
-                    if ((scalarI - scalarF) * 1 > 0) {
-                        label = 90;
-                    }
-                    break;
-                //11FORJ=1TOLSTEPMS
-                case 11:
-                    label = 12;
-                    if (loopActive11 == false) {
-                        scalarJ = 1;
-                        loopActive11 = true;
-                    }
-                    if ((scalarJ - scalarL) * scalarMS > 0) {
-                        label = 14;
-                    }
-                    break;
-                //12PRINTMID$(W$,J,S);
-                case 12:
-                    label = 13;
-                    output.print(mid(stringW, scalarJ, scalarS));
-                    break;
-                //13NEXTJ
-                case 13:
-                    label = 14;
-                    scalarJ = scalarJ + scalarMS;
-                    label = 11;
-                    break;
-                //14NEXTI
-                case 14:
-                    label = 90;
-                    scalarI = scalarI + 1;
-                    label = 10;
-                    break;
-                //90PRINT
-                case 90:
-                    label = 99;
-                    output.println();
-                    break;
-                //99END
-                case 99:
-                    label = 9999;
-                    label = 9999;
-                    break;
-                case 9999:
-                    break mainLoop;
-                default:
-                    throw new IllegalStateException("The label " + label + " is not recognized.");
-            }
+        float waveCount = inputProvider.fetch();
+        output.println();
+        return waveCount;
+    }
+
+    private static void renderWaves(Output output, WaveParameters parameters) {
+        for (float waveIndex = 1f; !isBeyondLoopEnd(waveIndex, parameters.waveCount(), 1f); waveIndex += 1f) {
+            renderWaveCycle(output, parameters);
+        }
+    }
+
+    private static void renderWaveCycle(Output output, WaveParameters parameters) {
+        for (float position = 1f; !isBeyondLoopEnd(position, parameters.patternLength(), WAVE_STEP); position += WAVE_STEP) {
+            output.print(mid(WAVE_PATTERN, position, parameters.sampleWidth()));
+        }
+    }
+
+    private static boolean isBeyondLoopEnd(float current, float limit, float step) {
+        return (current - limit) * step > 0;
+    }
+
+    private static final class WaveParameters {
+        private final float waveCount;
+        private final float patternLength;
+        private final float sampleWidth;
+
+        private WaveParameters(float waveCount) {
+            this.waveCount = waveCount;
+            this.patternLength = len(WAVE_PATTERN);
+            float crestWidth = patternLength / waveCount;
+            this.sampleWidth = crestWidth / WAVE_SEGMENT_COUNT;
+        }
+
+        private float waveCount() {
+            return waveCount;
+        }
+
+        private float patternLength() {
+            return patternLength;
+        }
+
+        private float sampleWidth() {
+            return sampleWidth;
         }
     }
 }
+
