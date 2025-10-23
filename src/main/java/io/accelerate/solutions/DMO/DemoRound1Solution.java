@@ -1,21 +1,27 @@
 package io.accelerate.solutions.DMO;
 
-import io.accelerate.runner.SolutionNotImplementedException;
-
 public class DemoRound1Solution {
+
+    // Increment a given integer by 1
     public int increment(int x) {
-        throw new SolutionNotImplementedException();
+        return x + 1;
     }
 
+    // Convert the input string to uppercase
     public String toUppercase(String text) {
-        throw new SolutionNotImplementedException();
+        return text.toUpperCase();
     }
 
+    // Compose a letter to Santa containing the words "Dear" and "Santa"
     public String letterToSanta() {
-        throw new SolutionNotImplementedException();
+        return "Dear Santa,\nI hope you are doing well. I have been good this year!";
     }
 
+    // Count the number of lines in a given multi-line string
     public int countLines(String text) {
-        throw new SolutionNotImplementedException();
+        if (text == null || text.isEmpty()) {
+            return 0;
+        }
+        return text.split("\r\n|\r|\n").length;
     }
 }
