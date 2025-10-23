@@ -12,8 +12,20 @@ public class DemoRound4n5Solution {
         Main.InputProviderScalar inputProvider = () -> (float) numberOfWaves;
 
         Main.run(outputSink, inputProvider);
-        return outputSink.content();
+
+        String rawOutput = outputSink.content();
+        String[] lines = rawOutput.split("\\R");
+
+        for (int index = lines.length - 1; index >= 0; index--) {
+            String line = lines[index];
+            if (!line.isEmpty()) {
+                return line;
+            }
+        }
+
+        return "";
     }
 
 }
+
 
