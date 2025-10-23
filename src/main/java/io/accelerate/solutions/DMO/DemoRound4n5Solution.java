@@ -27,5 +27,3 @@ public class DemoRound4n5Solution {
     }
 
 }
-
-
