@@ -26,6 +26,7 @@ xattr -rd com.apple.quarantine "${SCRIPT_CURRENT_DIR}" >/dev/null 2>&1 || true
 
 set -ex
 exec "$JAVA_BIN"                    \
+  -Dlogback.configurationFile=logback.xml \
   -Dlogback.enableJansi="true"      \
   -jar "$JAR_FILE"                  \
   "track-and-upload"                \
